@@ -9,8 +9,8 @@ console.log(`Seeding data demo untuk trading_date: ${tradingDate}`);
 db.prepare(`DELETE FROM signals WHERE trading_date = ?`).run(tradingDate);
 
 const insert = db.prepare(`
-  INSERT INTO signals (trading_date, sequence, direction, entry_price, sl_price, tp1_price, tp2_price, status, signal_time, resolved_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  INSERT INTO signals (trading_date, sequence, direction, entry_price, sl_price, tp1_price, tp2_price, status, signal_time, resolved_at, tp1_nominal, tp2_nominal, sl_nominal)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 let base = 2400;
@@ -27,10 +27,16 @@ for (let i = 1; i <= 20; i++) {
   const signalTime = new Date();
   signalTime.setHours(hour, 0, 0, 0);
 
+  // nominal contoh (dalam USD) - ini nanti diisi manual oleh kamu lewat /admin
+  const tp1_nominal = status === 'TP1' || status === 'TP2' ? 50 : null;
+  const tp2_nominal = status === 'TP2' ? 120 : null;
+  const sl_nominal = status === 'SL' ? -40 : null;
+
   insert.run(
     tradingDate, i, direction, entry, sl, tp1, tp2, status,
     signalTime.toISOString(),
-    status !== 'PENDING' ? new Date().toISOString() : null
+    status !== 'PENDING' ? new Date().toISOString() : null,
+    tp1_nominal, tp2_nominal, sl_nominal
   );
   base = entry;
 }
