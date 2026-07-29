@@ -13,6 +13,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', signalsRouter);
 
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 app.get('/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
 app.listen(PORT, () => {
