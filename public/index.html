@@ -31,40 +31,59 @@
         <header class="hero">
           <div class="eyebrow">// autonomous market signal engine</div>
           <h1><span class="glitch" data-text="XAU/USD SIGNAL PORTFOLIO">XAU/USD SIGNAL PORTFOLIO</span></h1>
-          <p class="sub">Bot mengirim signal tiap jam &middot; 07:00 &rarr; 02:00 &middot; 20 signal / trading day</p>
+          <p class="sub">Hasil dari Portofolio AI Assistant, setiap hari &mdash; tanpa edit dan drama.</p>
         </header>
 
-        <section class="stats-bar" id="stats-bar">
-          <div class="stat">
-            <div class="stat-label">TOTAL</div>
-            <div class="stat-value" id="stat-total">0</div>
-          </div>
-          <div class="stat tp2">
-            <div class="stat-label">TP2</div>
-            <div class="stat-value" id="stat-tp2">0</div>
-          </div>
-          <div class="stat tp1">
-            <div class="stat-label">TP1</div>
-            <div class="stat-value" id="stat-tp1">0</div>
-          </div>
-          <div class="stat sl">
-            <div class="stat-label">SL</div>
-            <div class="stat-value" id="stat-sl">0</div>
-          </div>
-          <div class="stat pending">
-            <div class="stat-label">PENDING</div>
-            <div class="stat-value" id="stat-pending">0</div>
-          </div>
-          <div class="stat winrate">
-            <div class="stat-label">WIN RATE</div>
-            <div class="stat-value" id="stat-winrate">0%</div>
+        <section class="stats-section">
+          <div class="stats-heading">// all-time performance <span class="dim">(gabungan semua tanggal)</span></div>
+          <div class="stats-bar" id="stats-bar">
+            <div class="stat">
+              <div class="stat-label">TOTAL</div>
+              <div class="stat-value" id="stat-total">0</div>
+            </div>
+            <div class="stat tp2">
+              <div class="stat-label">TP2</div>
+              <div class="stat-value" id="stat-tp2">0</div>
+            </div>
+            <div class="stat tp1">
+              <div class="stat-label">TP1</div>
+              <div class="stat-value" id="stat-tp1">0</div>
+            </div>
+            <div class="stat sl">
+              <div class="stat-label">SL</div>
+              <div class="stat-value" id="stat-sl">0</div>
+            </div>
+            <div class="stat pending">
+              <div class="stat-label">PENDING</div>
+              <div class="stat-value" id="stat-pending">0</div>
+            </div>
+            <div class="stat winrate">
+              <div class="stat-label">WIN RATE</div>
+              <div class="stat-value" id="stat-winrate">0%</div>
+            </div>
+            <div class="stat pnl">
+              <div class="stat-label">TOTAL P/L</div>
+              <div class="stat-value" id="stat-pnl">$0</div>
+            </div>
           </div>
         </section>
 
+        <div class="stats-heading table-heading">// daily log</div>
         <section class="date-nav">
-          <button id="prev-date" class="nav-btn">&laquo; PREV</button>
-          <div class="current-date" id="current-date">-- --- ----</div>
-          <button id="next-date" class="nav-btn">NEXT &raquo;</button>
+          <button id="prev-date" class="nav-btn" aria-label="Tanggal sebelumnya">&laquo; PREV</button>
+          <div class="current-date-wrap">
+            <div class="current-date" id="current-date">-- --- ----</div>
+            <button id="calendar-btn" class="calendar-btn" aria-label="Pilih tanggal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </button>
+            <input type="date" id="date-picker" class="date-picker-input" />
+          </div>
+          <button id="next-date" class="nav-btn" aria-label="Tanggal berikutnya">NEXT &raquo;</button>
         </section>
 
         <section class="table-wrap">
@@ -79,6 +98,7 @@
                 <th>TP1</th>
                 <th>TP2</th>
                 <th>STATUS</th>
+                <th>P/L ($)</th>
               </tr>
             </thead>
             <tbody id="signal-tbody">
@@ -94,6 +114,7 @@
         <footer class="footer">
           <span class="dim">last sync:</span> <span id="last-sync">--</span>
           <span class="dim">&nbsp;|&nbsp; system status:</span> <span class="status-ok">ONLINE</span>
+          <span class="dim">&nbsp;|&nbsp;</span> <a href="/admin" class="admin-link">admin &rarr;</a>
         </footer>
 
       </div>
