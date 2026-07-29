@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db, getTradingDate } = require('../db/db');
 
-// --- Middleware: proteksi endpoint tulis (dipakai bot) dengan API key ---
+// --- Middleware: proteksi endpoint tulis (dipakai bot & admin) dengan API key ---
 function requireApiKey(req, res, next) {
   const key = req.header('x-api-key');
   if (!process.env.API_KEY) {
@@ -34,16 +34,33 @@ router.get('/signals', (req, res) => {
 // --- GET /api/stats?date=YYYY-MM-DD -> ringkasan statistik hari itu ---
 router.get('/stats', (req, res) => {
   const date = req.query.date || getTradingDate();
-  const rows = db.prepare(`SELECT status FROM signals WHERE trading_date = ?`).all(date);
-  const stats = { total: rows.length, PENDING: 0, TP1: 0, TP2: 0, SL: 0 };
-  rows.forEach(r => { stats[r.status] = (stats[r.status] || 0) + 1; });
+  const rows = db.prepare(`SELECT status, tp1_nominal, tp2_nominal, sl_nominal FROM signals WHERE trading_date = ?`).all(date);
+  res.json(computeStats(rows));
+});
+
+// --- GET /api/stats/overall -> gabungan SEMUA tanggal (all-time) ---
+router.get('/stats/overall', (req, res) => {
+  const rows = db.prepare(`SELECT status, tp1_nominal, tp2_nominal, sl_nominal FROM signals`).all();
+  res.json(computeStats(rows));
+});
+
+// --- Helper: hitung ringkasan dari kumpulan baris signal ---
+function computeStats(rows) {
+  const stats = { total: rows.length, PENDING: 0, TP1: 0, TP2: 0, SL: 0, total_pnl: 0 };
+  rows.forEach(r => {
+    stats[r.status] = (stats[r.status] || 0) + 1;
+    if (r.status === 'TP1') stats.total_pnl += r.tp1_nominal || 0;
+    if (r.status === 'TP2') stats.total_pnl += r.tp2_nominal || 0;
+    if (r.status === 'SL') stats.total_pnl += r.sl_nominal || 0;
+  });
   const resolved = stats.TP1 + stats.TP2 + stats.SL;
   const wins = stats.TP1 + stats.TP2;
   stats.win_rate = resolved > 0 ? Math.round((wins / resolved) * 1000) / 10 : 0;
-  res.json(stats);
-});
+  stats.total_pnl = Math.round(stats.total_pnl * 100) / 100;
+  return stats;
+}
 
-// --- POST /api/signals -> bot 1 (signal generator) kirim signal baru ---
+// --- POST /api/signals -> bot kirim signal baru (mentah, tanpa status/nominal) ---
 router.post('/signals', requireApiKey, (req, res) => {
   const { direction, entry_price, sl_price, tp1_price, tp2_price, signal_time } = req.body;
 
@@ -68,10 +85,10 @@ router.post('/signals', requireApiKey, (req, res) => {
   res.status(201).json(created);
 });
 
-// --- PATCH /api/signals/:id/status -> bot 2 (monitor) update status ---
+// --- PATCH /api/signals/:id/status -> update status + nominal (diisi manual lewat /admin) ---
 router.patch('/signals/:id/status', requireApiKey, (req, res) => {
   const { id } = req.params;
-  const { status } = req.body; // 'TP1' | 'TP2' | 'SL'
+  const { status, nominal } = req.body; // status: 'TP1' | 'TP2' | 'SL' | 'PENDING', nominal: angka $ (opsional)
 
   const valid = ['PENDING', 'TP1', 'TP2', 'SL'];
   if (!valid.includes(status)) {
@@ -90,9 +107,23 @@ router.patch('/signals/:id/status', requireApiKey, (req, res) => {
   }
 
   const isFinal = status === 'TP2' || status === 'SL';
+
+  // Nominal disimpan per tahap (TP1/TP2/SL) supaya histori tidak hilang
+  // walau signal lanjut dari TP1 -> TP2.
+  const tp1_nominal = status === 'TP1' && nominal != null ? nominal : signal.tp1_nominal;
+  const tp2_nominal = status === 'TP2' && nominal != null ? nominal : signal.tp2_nominal;
+  const sl_nominal  = status === 'SL'  && nominal != null ? nominal : signal.sl_nominal;
+
   db.prepare(`
-    UPDATE signals SET status = ?, resolved_at = ? WHERE id = ?
-  `).run(status, isFinal ? new Date().toISOString() : signal.resolved_at, id);
+    UPDATE signals
+    SET status = ?, resolved_at = ?, tp1_nominal = ?, tp2_nominal = ?, sl_nominal = ?
+    WHERE id = ?
+  `).run(
+    status,
+    isFinal ? new Date().toISOString() : signal.resolved_at,
+    tp1_nominal, tp2_nominal, sl_nominal,
+    id
+  );
 
   const updated = db.prepare(`SELECT * FROM signals WHERE id = ?`).get(id);
   res.json(updated);
