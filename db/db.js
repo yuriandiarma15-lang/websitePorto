@@ -28,6 +28,16 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_trading_date ON signals(trading_date);
 `);
 
+// --- Migration ringan: tambah kolom nominal kalau belum ada ---
+// (supaya database lama yang sudah ada datanya tidak perlu dihapus ulang)
+const existingCols = db.prepare(`PRAGMA table_info(signals)`).all().map(c => c.name);
+const nominalCols = ['tp1_nominal', 'tp2_nominal', 'sl_nominal'];
+for (const col of nominalCols) {
+  if (!existingCols.includes(col)) {
+    db.exec(`ALTER TABLE signals ADD COLUMN ${col} REAL`);
+  }
+}
+
 /**
  * Hitung "trading_date" dari timestamp asli.
  * Sesi berjalan 07:00 -> 02:00 dini hari berikutnya.
