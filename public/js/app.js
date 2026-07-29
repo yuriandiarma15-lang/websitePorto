@@ -79,8 +79,8 @@ function typeLine(el, text) {
 function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 // ===================== DATA / STATE =====================
-let availableDates = [];
-let currentIndex = 0;
+let currentDate = null;   // trading_date yang lagi ditampilkan di tabel, format 'YYYY-MM-DD'
+let latestDate = null;    // trading_date paling baru yang ada datanya (batas atas navigasi)
 
 const MONTHS_ID = ['JAN','FEB','MAR','APR','MEI','JUN','JUL','AGU','SEP','OKT','NOV','DES'];
 
@@ -89,47 +89,75 @@ function formatDateLabel(isoDate) {
   return `${String(d).padStart(2,'0')} ${MONTHS_ID[m - 1]} ${y}`;
 }
 
+function todayISO() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function addDays(iso, delta) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  dt.setDate(dt.getDate() + delta);
+  const yy = dt.getFullYear();
+  const mm = String(dt.getMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
+
 async function fetchJSON(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Request gagal: ${url}`);
   return res.json();
 }
 
-async function loadDates() {
+async function init() {
   const dates = await fetchJSON('/api/dates');
-  availableDates = dates.map(d => d.trading_date);
-  if (availableDates.length === 0) {
-    // fallback: tampilkan hari ini walau kosong
-    const today = new Date();
-    const iso = today.toISOString().slice(0, 10);
-    availableDates = [iso];
-  }
-  currentIndex = 0; // paling baru
-  await loadSelectedDate();
+  latestDate = dates.length > 0 ? dates[0].trading_date : todayISO();
+  currentDate = latestDate;
+  document.getElementById('date-picker').value = currentDate;
+  document.getElementById('date-picker').max = latestDate;
+
+  await Promise.all([loadOverallStats(), loadSelectedDate()]);
 }
 
-async function loadSelectedDate() {
-  const date = availableDates[currentIndex];
-  document.getElementById('current-date').textContent = formatDateLabel(date);
-
-  const [data, stats] = await Promise.all([
-    fetchJSON(`/api/signals?date=${date}`),
-    fetchJSON(`/api/stats?date=${date}`),
-  ]);
-
-  renderStats(stats);
-  renderTable(data.signals);
-  updateNavButtons();
-  document.getElementById('last-sync').textContent = new Date().toLocaleTimeString('id-ID', { hour12: false });
-}
-
-function renderStats(stats) {
+async function loadOverallStats() {
+  const stats = await fetchJSON('/api/stats/overall');
   document.getElementById('stat-total').textContent = stats.total ?? 0;
   document.getElementById('stat-tp2').textContent = stats.TP2 ?? 0;
   document.getElementById('stat-tp1').textContent = stats.TP1 ?? 0;
   document.getElementById('stat-sl').textContent = stats.SL ?? 0;
   document.getElementById('stat-pending').textContent = stats.PENDING ?? 0;
   document.getElementById('stat-winrate').textContent = `${stats.win_rate ?? 0}%`;
+
+  const pnlEl = document.getElementById('stat-pnl');
+  const pnl = stats.total_pnl ?? 0;
+  pnlEl.textContent = `${pnl >= 0 ? '$' : '-$'}${Math.abs(pnl).toFixed(2)}`;
+  pnlEl.closest('.stat').classList.toggle('negative', pnl < 0);
+}
+
+async function loadSelectedDate() {
+  document.getElementById('current-date').textContent = formatDateLabel(currentDate);
+  document.getElementById('date-picker').value = currentDate;
+
+  const data = await fetchJSON(`/api/signals?date=${currentDate}`);
+  renderTable(data.signals);
+  updateNavButtons();
+  document.getElementById('last-sync').textContent = new Date().toLocaleTimeString('id-ID', { hour12: false });
+}
+
+function pnlCell(s) {
+  let val = null;
+  if (s.status === 'TP1') val = s.tp1_nominal;
+  if (s.status === 'TP2') val = s.tp2_nominal;
+  if (s.status === 'SL') val = s.sl_nominal;
+
+  if (val == null) return `<span class="pnl-empty">&mdash;</span>`;
+  const cls = val >= 0 ? 'pnl-positive' : 'pnl-negative';
+  const sign = val >= 0 ? '+$' : '-$';
+  return `<span class="${cls}">${sign}${Math.abs(val).toFixed(2)}</span>`;
 }
 
 function renderTable(signals) {
@@ -156,39 +184,47 @@ function renderTable(signals) {
       <td>${s.tp1_price}</td>
       <td>${s.tp2_price}</td>
       <td><span class="badge ${s.status}">${s.status}</span></td>
+      <td>${pnlCell(s)}</td>
     `;
     tbody.appendChild(tr);
   }
 }
 
 function updateNavButtons() {
-  document.getElementById('prev-date').disabled = currentIndex >= availableDates.length - 1;
-  document.getElementById('next-date').disabled = currentIndex <= 0;
+  document.getElementById('next-date').disabled = currentDate >= latestDate;
 }
 
 document.getElementById('prev-date').addEventListener('click', () => {
-  if (currentIndex < availableDates.length - 1) {
-    currentIndex++;
-    loadSelectedDate();
-  }
+  currentDate = addDays(currentDate, -1);
+  loadSelectedDate().catch(console.error);
 });
 document.getElementById('next-date').addEventListener('click', () => {
-  if (currentIndex > 0) {
-    currentIndex--;
-    loadSelectedDate();
-  }
+  if (currentDate >= latestDate) return;
+  currentDate = addDays(currentDate, 1);
+  loadSelectedDate().catch(console.error);
 });
 
-// ===================== INIT =====================
-(async function init() {
+document.getElementById('calendar-btn').addEventListener('click', () => {
+  const picker = document.getElementById('date-picker');
+  if (picker.showPicker) picker.showPicker();
+  else picker.focus();
+});
+document.getElementById('date-picker').addEventListener('change', (e) => {
+  if (!e.target.value) return;
+  currentDate = e.target.value;
+  loadSelectedDate().catch(console.error);
+});
+
+// ===================== BOOT =====================
+(async function boot() {
   await playBootSequence();
   try {
-    await loadDates();
+    await init();
   } catch (err) {
     console.error(err);
   }
-  // auto-refresh data tiap 30 detik (untuk lihat update dari bot monitor)
   setInterval(() => {
+    loadOverallStats().catch(console.error);
     loadSelectedDate().catch(console.error);
   }, 30000);
 })();
