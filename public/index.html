@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>XAUUSD // signal.ai portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <canvas id="matrix-bg"></canvas>
+  <div class="scanline-overlay"></div>
+
+  <div id="boot-screen">
+    <div id="boot-log"></div>
+  </div>
+
+  <main id="app" class="hidden">
+
+    <div class="terminal-window">
+      <div class="title-bar">
+        <div class="dots"><span class="dot red"></span><span class="dot amber"></span><span class="dot green"></span></div>
+        <div class="title-text">signal.ai — xauusd@portfolio:~$</div>
+        <div class="clock" id="live-clock">--:--:--</div>
+      </div>
+
+      <div class="content">
+
+        <header class="hero">
+          <div class="eyebrow">// autonomous market signal engine</div>
+          <h1><span class="glitch" data-text="XAU/USD SIGNAL PORTFOLIO">XAU/USD SIGNAL PORTFOLIO</span></h1>
+          <p class="sub">Bot mengirim signal tiap jam &middot; 07:00 &rarr; 02:00 &middot; 20 signal / trading day</p>
+        </header>
+
+        <section class="stats-bar" id="stats-bar">
+          <div class="stat">
+            <div class="stat-label">TOTAL</div>
+            <div class="stat-value" id="stat-total">0</div>
+          </div>
+          <div class="stat tp2">
+            <div class="stat-label">TP2</div>
+            <div class="stat-value" id="stat-tp2">0</div>
+          </div>
+          <div class="stat tp1">
+            <div class="stat-label">TP1</div>
+            <div class="stat-value" id="stat-tp1">0</div>
+          </div>
+          <div class="stat sl">
+            <div class="stat-label">SL</div>
+            <div class="stat-value" id="stat-sl">0</div>
+          </div>
+          <div class="stat pending">
+            <div class="stat-label">PENDING</div>
+            <div class="stat-value" id="stat-pending">0</div>
+          </div>
+          <div class="stat winrate">
+            <div class="stat-label">WIN RATE</div>
+            <div class="stat-value" id="stat-winrate">0%</div>
+          </div>
+        </section>
+
+        <section class="date-nav">
+          <button id="prev-date" class="nav-btn">&laquo; PREV</button>
+          <div class="current-date" id="current-date">-- --- ----</div>
+          <button id="next-date" class="nav-btn">NEXT &raquo;</button>
+        </section>
+
+        <section class="table-wrap">
+          <table class="signal-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>TIME</th>
+                <th>DIR</th>
+                <th>ENTRY</th>
+                <th>SL</th>
+                <th>TP1</th>
+                <th>TP2</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="signal-tbody">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+          <div id="empty-state" class="empty-state hidden">
+            <p>&gt; no signals logged for this trading_date</p>
+            <p class="dim">waiting for bot input...<span class="cursor">_</span></p>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <span class="dim">last sync:</span> <span id="last-sync">--</span>
+          <span class="dim">&nbsp;|&nbsp; system status:</span> <span class="status-ok">ONLINE</span>
+        </footer>
+
+      </div>
+    </div>
+  </main>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
