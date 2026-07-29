@@ -26,7 +26,6 @@ html, body {
 
 ::selection { background: var(--green); color: #000; }
 
-/* ---------- Matrix rain background ---------- */
 #matrix-bg {
   position: fixed;
   top: 0; left: 0;
@@ -52,7 +51,6 @@ html, body {
   mix-blend-mode: overlay;
 }
 
-/* ---------- Boot screen ---------- */
 #boot-screen {
   position: fixed;
   inset: 0;
@@ -75,7 +73,6 @@ html, body {
 
 .hidden { display: none !important; }
 
-/* ---------- Layout ---------- */
 main#app {
   position: relative;
   z-index: 1;
@@ -114,7 +111,6 @@ main#app {
 
 .content { padding: 32px 28px 24px; }
 
-/* ---------- Hero ---------- */
 .hero { text-align: center; margin-bottom: 28px; }
 .eyebrow {
   color: var(--green-dim);
@@ -135,7 +131,6 @@ main#app {
   margin: 0;
 }
 
-/* subtle glitch flicker on hero title */
 .glitch { position: relative; display: inline-block; }
 .glitch::before {
   content: attr(data-text);
@@ -155,12 +150,19 @@ main#app {
   97% { opacity: 0; }
 }
 
-/* ---------- Stats bar ---------- */
+.stats-section { margin-bottom: 26px; }
+.stats-heading {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: var(--green-dim);
+  margin-bottom: 10px;
+}
+.stats-heading.table-heading { margin-top: 4px; }
+
 .stats-bar {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 10px;
-  margin-bottom: 24px;
 }
 .stat {
   border: 1px solid var(--border);
@@ -176,12 +178,16 @@ main#app {
 .stat.sl .stat-value { color: var(--red); }
 .stat.pending .stat-value { color: var(--amber); }
 .stat.winrate .stat-value { color: var(--green); text-shadow: 0 0 10px rgba(51,255,102,0.4); }
+.stat.pnl .stat-value { color: var(--cyan); }
+.stat.pnl.negative .stat-value { color: var(--red); }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
+  .stats-bar { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 520px) {
   .stats-bar { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ---------- Date nav ---------- */
 .date-nav {
   display: flex;
   align-items: center;
@@ -202,15 +208,55 @@ main#app {
 }
 .nav-btn:hover { color: var(--green); border-color: var(--green-dim); background: rgba(51,255,102,0.05); }
 .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.current-date-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .current-date {
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 1px;
-  min-width: 200px;
+  min-width: 170px;
   text-align: center;
 }
+.calendar-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--green-dim);
+  border-radius: 5px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.calendar-btn:hover { color: var(--green); border-color: var(--green-dim); background: rgba(51,255,102,0.05); }
 
-/* ---------- Table ---------- */
+.date-picker-input {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+}
+
+.pnl-positive { color: var(--cyan); font-weight: 600; }
+.pnl-negative { color: var(--red); font-weight: 600; }
+.pnl-empty { color: var(--text-muted); }
+
+.admin-link {
+  color: var(--green-dim);
+  text-decoration: none;
+}
+.admin-link:hover { color: var(--green); text-decoration: underline; }
+
 .table-wrap {
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -264,7 +310,6 @@ main#app {
 .cursor { animation: blink 1s step-start infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* ---------- Footer ---------- */
 .footer {
   margin-top: 20px;
   font-size: 11px;
@@ -274,7 +319,6 @@ main#app {
 .dim { color: var(--text-muted); }
 .status-ok { color: var(--green); }
 
-/* focus visibility for accessibility */
 button:focus-visible {
   outline: 2px solid var(--green);
   outline-offset: 2px;
