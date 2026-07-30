@@ -1,126 +1,340 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>XAUUSD // signal.ai portfolio</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/style.css" />
+
+<link rel="stylesheet" href="/css/style.css">
+
 </head>
 <body>
 
-  <canvas id="matrix-bg"></canvas>
-  <div class="scanline-overlay"></div>
+<canvas id="matrix-bg"></canvas>
+<div class="scanline-overlay"></div>
 
-  <div id="boot-screen">
+<div id="boot-screen">
     <div id="boot-log"></div>
-  </div>
+</div>
 
-  <main id="app" class="hidden">
+<main id="app" class="hidden">
 
-    <div class="terminal-window">
-      <div class="title-bar">
-        <div class="dots"><span class="dot red"></span><span class="dot amber"></span><span class="dot green"></span></div>
-        <div class="title-text">signal.ai — xauusd@portfolio:~$</div>
-        <div class="clock" id="live-clock">--:--:--</div>
-      </div>
+<div class="terminal-window">
 
-      <div class="content">
+<div class="title-bar">
 
-        <header class="hero">
-          <div class="eyebrow">// autonomous market signal engine</div>
-          <h1><span class="glitch" data-text="XAU/USD SIGNAL PORTFOLIO">XAU/USD SIGNAL PORTFOLIO</span></h1>
-          <p class="sub">Hasil dari Portofolio AI Assistant, setiap hari &mdash; tanpa edit dan drama.</p>
-        </header>
+<div class="dots">
+<span class="dot red"></span>
+<span class="dot amber"></span>
+<span class="dot green"></span>
+</div>
 
-        <section class="stats-section">
-          <div class="stats-heading">// all-time performance <span class="dim">(gabungan semua tanggal)</span></div>
-          <div class="stats-bar" id="stats-bar">
-            <div class="stat">
-              <div class="stat-label">TOTAL</div>
-              <div class="stat-value" id="stat-total">0</div>
-            </div>
-            <div class="stat tp2">
-              <div class="stat-label">TP2</div>
-              <div class="stat-value" id="stat-tp2">0</div>
-            </div>
-            <div class="stat tp1">
-              <div class="stat-label">TP1</div>
-              <div class="stat-value" id="stat-tp1">0</div>
-            </div>
-            <div class="stat sl">
-              <div class="stat-label">SL</div>
-              <div class="stat-value" id="stat-sl">0</div>
-            </div>
-            <div class="stat pending">
-              <div class="stat-label">PENDING</div>
-              <div class="stat-value" id="stat-pending">0</div>
-            </div>
-            <div class="stat winrate">
-              <div class="stat-label">WIN RATE</div>
-              <div class="stat-value" id="stat-winrate">0%</div>
-            </div>
-            <div class="stat pnl">
-              <div class="stat-label">TOTAL P/L</div>
-              <div class="stat-value" id="stat-pnl">$0</div>
-            </div>
-          </div>
-        </section>
+<div class="title-text">
+signal.ai — xauusd@portfolio:~$
+</div>
 
-        <div class="stats-heading table-heading">// daily log</div>
-        <section class="date-nav">
-          <button id="prev-date" class="nav-btn" aria-label="Tanggal sebelumnya">&laquo; PREV</button>
-          <div class="current-date-wrap">
-            <div class="current-date" id="current-date">-- --- ----</div>
-            <button id="calendar-btn" class="calendar-btn" aria-label="Pilih tanggal">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-            </button>
-            <input type="date" id="date-picker" class="date-picker-input" />
-          </div>
-          <button id="next-date" class="nav-btn" aria-label="Tanggal berikutnya">NEXT &raquo;</button>
-        </section>
+<div class="clock" id="live-clock">
+--:--:--
+</div>
 
-        <section class="table-wrap">
-          <table class="signal-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>TIME</th>
-                <th>DIR</th>
-                <th>ENTRY</th>
-                <th>SL</th>
-                <th>TP1</th>
-                <th>TP2</th>
-                <th>STATUS</th>
-                <th>P/L ($)</th>
-              </tr>
-            </thead>
-            <tbody id="signal-tbody">
-              <!-- rows injected by JS -->
-            </tbody>
-          </table>
-          <div id="empty-state" class="empty-state hidden">
-            <p>&gt; no signals logged for this trading_date</p>
-            <p class="dim">waiting for bot input...<span class="cursor">_</span></p>
-          </div>
-        </section>
+</div>
 
-        <footer class="footer">
-          <span class="dim">last sync:</span> <span id="last-sync">--</span>
-          <span class="dim">&nbsp;|&nbsp; system status:</span> <span class="status-ok">ONLINE</span>
-          <span class="dim">&nbsp;|&nbsp;</span> <a href="/admin" class="admin-link">admin &rarr;</a>
-        </footer>
+<div class="content">
 
-      </div>
-    </div>
-  </main>
+<header class="hero">
+
+<div class="eyebrow">
+// autonomous market signal engine
+</div>
+
+<h1>
+<span
+class="glitch"
+data-text="XAU/USD SIGNAL PORTFOLIO">
+
+XAU/USD SIGNAL PORTFOLIO
+
+</span>
+</h1>
+
+<p class="sub">
+Hasil dari Portofolio AI Assistant,
+setiap hari — tanpa edit dan drama.
+</p>
+
+</header>
+
+<!-- ================================================= -->
+<!-- STATS -->
+<!-- ================================================= -->
+
+<section class="stats-section">
+
+<div class="stats-heading">
+
+// all-time performance
+<span class="dim">
+(gabungan semua tanggal)
+</span>
+
+</div>
+
+<div class="stats-bar" id="stats-bar">
+
+<div class="stat">
+<div class="stat-label">TOTAL</div>
+<div class="stat-value" id="stat-total">0</div>
+</div>
+
+<div class="stat tp2">
+<div class="stat-label">TP2</div>
+<div class="stat-value" id="stat-tp2">0</div>
+</div>
+
+<div class="stat tp1">
+<div class="stat-label">TP1</div>
+<div class="stat-value" id="stat-tp1">0</div>
+</div>
+
+<div class="stat sl">
+<div class="stat-label">SL</div>
+<div class="stat-value" id="stat-sl">0</div>
+</div>
+
+<div class="stat pending">
+<div class="stat-label">PENDING</div>
+<div class="stat-value" id="stat-pending">0</div>
+</div>
+
+<div class="stat winrate">
+<div class="stat-label">WIN RATE</div>
+<div class="stat-value" id="stat-winrate">
+0%
+</div>
+</div>
+
+<div class="stat pnl">
+<div class="stat-label">TOTAL P/L</div>
+<div class="stat-value" id="stat-pnl">
+$0
+</div>
+</div>
+
+</div>
+
+</section>
+
+<!-- ================================================= -->
+<!-- DAILY LOG -->
+<!-- ================================================= -->
+
+<div class="stats-heading table-heading">
+// daily log
+</div>
+
+<section class="date-nav">
+
+<button
+id="prev-date"
+class="nav-btn">
+
+« PREV
+
+</button>
+
+<div class="current-date-wrap">
+
+<div
+id="current-date"
+class="current-date">
+
+-- --- ----
+
+</div>
+
+<button
+id="calendar-btn"
+class="calendar-btn">
+
+<svg
+width="16"
+height="16"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2">
+
+<rect
+x="3"
+y="4"
+width="18"
+height="18"
+rx="2"/>
+
+<line x1="16" y1="2" x2="16" y2="6"/>
+
+<line x1="8" y1="2" x2="8" y2="6"/>
+
+<line x1="3" y1="10" x2="21" y2="10"/>
+
+</svg>
+
+</button>
+
+<input
+id="date-picker"
+class="date-picker-input"
+type="date">
+
+</div>
+
+<button
+id="next-date"
+class="nav-btn">
+
+NEXT »
+
+</button>
+
+</section>
+
+<section class="table-wrap">
+
+<table class="signal-table">
+
+<thead>
+
+<tr>
+
+<th>#</th>
+<th>TIME</th>
+<th>DIR</th>
+<th>ENTRY</th>
+<th>SL</th>
+<th>TP1</th>
+<th>TP2</th>
+<th>STATUS</th>
+<th>P/L ($)</th>
+
+</tr>
+
+</thead>
+
+<tbody id="signal-tbody">
+
+</tbody>
+
+</table>
+
+<div
+id="empty-state"
+class="empty-state hidden">
+
+<p>
+&gt; no signals logged for this trading_date
+</p>
+
+<p class="dim">
+
+waiting for bot input...
+
+<span class="cursor">_</span>
+
+</p>
+
+</div>
+
+</section>
+
+<!-- ================================================= -->
+<!-- DAILY MT5 RESULT -->
+<!-- ================================================= -->
+
+<section class="daily-pnl-section">
+
+<div class="stats-heading">
+
+// DAILY MT5 RESULT
+
+</div>
+
+<div class="daily-pnl-card">
+
+<img
+id="daily-pnl-image"
+class="daily-pnl-image"
+src=""
+style="display:none;">
+
+<div
+id="daily-pnl-empty"
+class="daily-pnl-empty">
+
+Belum ada screenshot MT5
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================================================= -->
+<!-- FOOTER -->
+<!-- ================================================= -->
+
+<footer class="footer">
+
+<span class="dim">
+last sync:
+</span>
+
+<span id="last-sync">
+
+--
+
+</span>
+
+<span class="dim">
+
+&nbsp;|&nbsp;
+
+system status:
+
+</span>
+
+<span class="status-ok">
+
+ONLINE
+
+</span>
+
+<span class="dim">
+
+&nbsp;|&nbsp;
+
+</span>
+
+<a
+href="/admin"
+class="admin-link">
+
+admin →
+
+</a>
+
+</footer>
+
+</div>
+
+</div>
+
+</main>
 
 <script src="/js/app.js"></script>
+
 </body>
 </html>
