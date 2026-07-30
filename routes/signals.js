@@ -70,11 +70,17 @@ router.post('/signals', requireApiKey, (req, res) => {
 
   const ts = signal_time
   ? new Date(signal_time)
-  : new Date(
-      new Date().toLocaleString("en-US", {
-        timeZone: "Asia/Jakarta"
-      })
-    );
+  : (() => {
+      const d = new Date(
+        new Date().toLocaleString("en-US", {
+          timeZone: "Asia/Jakarta"
+        })
+      );
+
+      d.setHours(d.getHours() - 1);
+
+      return d;
+    })();
 
   const tradingDate = getTradingDate(ts);
 
