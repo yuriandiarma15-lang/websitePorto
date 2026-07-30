@@ -158,8 +158,7 @@ router.post(
   upload.single("image"),
   (req, res) => {
 
-    const trading_date =
-      req.body.trading_date || getTradingDate();
+    const trading_date = req.body.trading_date || getTradingDate();
 
     if (!req.file) {
       return res.status(400).json({
@@ -167,38 +166,31 @@ router.post(
       });
     }
 
-    const image_path =
-      "/uploads/pnl/" + req.file.filename;
+    const image_path = "/uploads/pnl/" + req.file.filename;
 
     db.prepare(`
-      INSERT INTO daily_pnl
-      (trading_date,image_path)
-      VALUES(?,?)
+      INSERT INTO daily_pnl (trading_date, image_path)
+      VALUES (?, ?)
       ON CONFLICT(trading_date)
-      DO UPDATE SET
-      image_path=excluded.image_path
-    `).run(
-      trading_date,
-      image_path
-    );
+      DO UPDATE SET image_path = excluded.image_path
+    `).run(trading_date, image_path);
 
-    res.json({
-  success: true,
-  image: image_path
- });
+    return res.json({
+      success: true,
+      image: image_path
+    });
 
-   }
+  }
 );
 
 router.get("/daily-pnl", (req, res) => {
 
-  const trading_date =
-    req.query.date || getTradingDate();
+  const trading_date = req.query.date || getTradingDate();
 
   const row = db.prepare(`
     SELECT *
     FROM daily_pnl
-    WHERE trading_date=?
+    WHERE trading_date = ?
   `).get(trading_date);
 
   res.json(row || null);
@@ -213,7 +205,7 @@ router.delete(
     const row = db.prepare(`
       SELECT *
       FROM daily_pnl
-      WHERE trading_date=?
+      WHERE trading_date = ?
     `).get(req.params.date);
 
     if (!row) {
@@ -222,12 +214,11 @@ router.delete(
       });
     }
 
-    const file =
-      path.join(
-        __dirname,
-        "..",
-        row.image_path
-      );
+    const file = path.join(
+      __dirname,
+      "..",
+      row.image_path
+    );
 
     if (fs.existsSync(file)) {
       fs.unlinkSync(file);
@@ -235,14 +226,14 @@ router.delete(
 
     db.prepare(`
       DELETE FROM daily_pnl
-      WHERE trading_date=?
+      WHERE trading_date = ?
     `).run(req.params.date);
 
-    res.json({
+    return res.json({
       success: true
- });
-  
+    });
+
   }
-});
+);
 
 module.exports = router;
