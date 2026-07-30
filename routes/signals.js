@@ -68,7 +68,14 @@ router.post('/signals', requireApiKey, (req, res) => {
     return res.status(400).json({ error: 'Field wajib: direction, entry_price, sl_price, tp1_price, tp2_price' });
   }
 
-  const ts = signal_time ? new Date(signal_time) : new Date();
+  const ts = signal_time
+  ? new Date(signal_time)
+  : new Date(
+      new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Jakarta"
+      })
+    );
+
   const tradingDate = getTradingDate(ts);
 
   const countRow = db.prepare(
