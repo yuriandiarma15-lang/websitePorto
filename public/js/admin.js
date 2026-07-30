@@ -218,3 +218,151 @@ document.getElementById('date-picker').addEventListener('change', (e) => {
     showGate();
   }
 })();
+
+// ============================================
+// DAILY PNL
+// ============================================
+
+async function loadDailyPNL() {
+
+    const date =
+        document.getElementById("pnl-date").value ||
+        currentDate;
+
+    try{
+
+        const data =
+            await fetchJSON(
+                "/api/daily-pnl?date="+date
+            );
+
+        const img =
+            document.getElementById("pnl-preview");
+
+        const empty =
+            document.getElementById("no-image");
+
+        if(data){
+
+            img.src=data.image_path+
+                "?t="+Date.now();
+
+            img.style.display="block";
+            empty.style.display="none";
+
+        }else{
+
+            img.style.display="none";
+            empty.style.display="block";
+
+        }
+
+    }catch(e){
+
+        console.error(e);
+
+    }
+
+}
+
+document
+.getElementById("pnl-date")
+.addEventListener("change",loadDailyPNL);
+
+document
+.getElementById("upload-pnl")
+.addEventListener("click",uploadDailyPNL);
+
+document
+.getElementById("delete-pnl")
+.addEventListener("click",deleteDailyPNL);
+
+async function uploadDailyPNL(){
+
+    const file =
+        document.getElementById("pnl-image").files[0];
+
+    if(!file){
+
+        showToast("Pilih gambar dahulu",true);
+        return;
+
+    }
+
+    const fd=new FormData();
+
+    fd.append("image",file);
+
+    fd.append(
+        "trading_date",
+        document.getElementById("pnl-date").value
+    );
+
+    try{
+
+        const res=await fetch(
+            "/api/daily-pnl",
+            {
+                method:"POST",
+                headers:{
+                    "x-api-key":getApiKey()
+                },
+                body:fd
+            }
+        );
+
+        const json=await res.json();
+
+        if(!res.ok)
+            throw new Error(json.error);
+
+        showToast("Upload berhasil");
+
+        loadDailyPNL();
+
+    }catch(err){
+
+        showToast(err.message,true);
+
+    }
+
+}
+
+async function deleteDailyPNL(){
+
+    const date=
+        document.getElementById("pnl-date").value;
+
+    if(!date) return;
+
+    if(!confirm("Hapus screenshot ini?"))
+        return;
+
+    try{
+
+        const res=await fetch(
+            "/api/daily-pnl/"+date,
+            {
+                method:"DELETE",
+                headers:{
+                    "x-api-key":getApiKey()
+                }
+            }
+        );
+
+        const json=await res.json();
+
+        if(!res.ok)
+            throw new Error(json.error);
+
+        showToast("Screenshot dihapus");
+
+        loadDailyPNL();
+
+    }catch(err){
+
+        showToast(err.message,true);
+
+    }
+
+}
