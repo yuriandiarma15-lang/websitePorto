@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { db, getTradingDate } = require('../db/db');
 
+const upload = require('../middleware/upload');
+const fs = require('fs');
+const path = require('path');
+
 // --- Middleware: proteksi endpoint tulis (dipakai bot & admin) dengan API key ---
 function requireApiKey(req, res, next) {
   const key = req.header('x-api-key');
@@ -138,8 +142,105 @@ router.patch('/signals/:id/status', requireApiKey, (req, res) => {
     id
   );
 
-  const updated = db.prepare(`SELECT * FROM signals WHERE id = ?`).get(id);
-  res.json(updated);
+  ...
+const updated = db.prepare(`SELECT * FROM signals WHERE id = ?`).get(id);
+res.json(updated);
+});
+
+
+// ===========================================
+// DAILY PNL
+// ===========================================
+
+router.post(
+  "/daily-pnl",
+  requireApiKey,
+  upload.single("image"),
+  (req, res) => {
+
+    const trading_date =
+      req.body.trading_date || getTradingDate();
+
+    if (!req.file) {
+      return res.status(400).json({
+        error: "Image wajib diupload"
+      });
+    }
+
+    const image_path =
+      "/uploads/pnl/" + req.file.filename;
+
+    db.prepare(`
+      INSERT INTO daily_pnl
+      (trading_date,image_path)
+      VALUES(?,?)
+      ON CONFLICT(trading_date)
+      DO UPDATE SET
+      image_path=excluded.image_path
+    `).run(
+      trading_date,
+      image_path
+    );
+
+    res.json({
+      success: true,
+      image: image_path
+    });
+
+});
+
+router.get("/daily-pnl", (req, res) => {
+
+  const trading_date =
+    req.query.date || getTradingDate();
+
+  const row = db.prepare(`
+    SELECT *
+    FROM daily_pnl
+    WHERE trading_date=?
+  `).get(trading_date);
+
+  res.json(row || null);
+
+});
+
+router.delete(
+  "/daily-pnl/:date",
+  requireApiKey,
+  (req, res) => {
+
+    const row = db.prepare(`
+      SELECT *
+      FROM daily_pnl
+      WHERE trading_date=?
+    `).get(req.params.date);
+
+    if (!row) {
+      return res.status(404).json({
+        error: "Data tidak ditemukan"
+      });
+    }
+
+    const file =
+      path.join(
+        __dirname,
+        "..",
+        row.image_path
+      );
+
+    if (fs.existsSync(file)) {
+      fs.unlinkSync(file);
+    }
+
+    db.prepare(`
+      DELETE FROM daily_pnl
+      WHERE trading_date=?
+    `).run(req.params.date);
+
+    res.json({
+      success: true
+    });
+
 });
 
 module.exports = router;
