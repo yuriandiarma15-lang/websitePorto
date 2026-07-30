@@ -327,3 +327,111 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .glitch::before, .cursor { animation: none !important; }
 }
+
+/* ===========================
+   DAILY PNL
+=========================== */
+
+.daily-pnl-section{
+    margin-top:35px;
+}
+
+.daily-pnl-title{
+    color:#33ff66;
+    font-size:13px;
+    margin-bottom:15px;
+    letter-spacing:2px;
+}
+
+.daily-pnl-card{
+    border:1px solid #1d3f26;
+    border-radius:10px;
+    padding:18px;
+    background:#071008;
+    text-align:center;
+}
+
+.daily-pnl-image{
+    width:100%;
+    max-width:900px;
+    border-radius:8px;
+    border:1px solid #1f4d2c;
+    display:block;
+    margin:auto;
+}
+
+.daily-pnl-empty{
+    color:#777;
+    padding:50px 20px;
+}
+
+.upload-box{
+    margin-top:30px;
+    border:1px dashed #33ff66;
+    border-radius:10px;
+    padding:20px;
+    background:#071008;
+}
+
+.upload-box h3{
+    margin-top:0;
+    color:#33ff66;
+}
+
+.upload-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+.upload-row input[type=file]{
+    color:white;
+}
+
+.upload-preview{
+    margin-top:20px;
+    text-align:center;
+}
+
+.upload-preview img{
+    max-width:100%;
+    border-radius:8px;
+    border:1px solid #1f4d2c;
+}
+
+.upload-btn{
+    background:#33ff66;
+    color:#000;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.upload-btn:hover{
+    opacity:.85;
+}
+
+.delete-btn{
+    background:#ff3b3b;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-left:10px;
+}
+
+.delete-btn:hover{
+    opacity:.85;
+}
+
+.success-text{
+    color:#33ff66;
+}
+
+.error-text{
+    color:#ff5555;
+}
