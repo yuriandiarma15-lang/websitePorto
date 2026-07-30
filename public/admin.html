@@ -208,106 +208,107 @@
             </section>
 
             <!-- ================================================= -->
-            <!-- DAILY MT5 PNL -->
-            <!-- ================================================= -->
+<!-- DAILY MT5 PNL -->
+<!-- ================================================= -->
 
-            <section class="terminal-window pnl-upload">
+<section class="terminal-window pnl-upload">
 
-                <div class="title-bar">
+    <div class="title-bar">
+        <div class="title-text">
+            DAILY MT5 PNL
+        </div>
+    </div>
 
-                    <div class="title-text">
-                        DAILY MT5 PNL
-                    </div>
+    <div class="content">
 
-                </div>
+        <div class="upload-grid">
 
-                <div class="content">
+            <!-- LEFT -->
 
-                    <div class="upload-grid">
+            <div class="upload-left">
 
-                        <!-- LEFT -->
+                <label>Tanggal Trading</label>
 
-                        <div class="upload-left">
+                <input
+                    id="pnl-date"
+                    type="date"
+                    class="key-input">
 
-                            <label>Tanggal</label>
+                <label>Screenshot MT5</label>
 
-                            <input
-                                id="pnl-date"
-                                type="date"
-                                class="key-input">
+                <input
+                    id="pnl-image"
+                    type="file"
+                    accept="image/*">
 
-                            <label>
-                                Upload Screenshot MT5
-                            </label>
+                <div class="upload-buttons">
 
-                            <input
-                                id="pnl-image"
-                                type="file"
-                                accept="image/*">
+                    <button
+                        id="upload-pnl"
+                        class="nav-btn primary">
 
-                            <div class="upload-buttons">
+                        ⬆ UPLOAD
 
-                                <button
-                                    id="upload-pnl"
-                                    class="nav-btn primary">
+                    </button>
 
-                                    UPLOAD
+                    <button
+                        id="delete-pnl"
+                        class="nav-btn">
 
-                                </button>
+                        🗑 HAPUS
 
-                                <button
-                                    id="delete-pnl"
-                                    class="nav-btn">
-
-                                    HAPUS
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                        <!-- RIGHT -->
-
-                        <div class="upload-right">
-
-                            <img
-                                id="pnl-preview"
-                                src=""
-                                style="display:none;width:100%;border:1px solid #00ff66;border-radius:8px;">
-
-                            <div
-                                id="no-image"
-                                style="
-                                    padding:60px;
-                                    text-align:center;
-                                    border:1px dashed #00ff66;
-                                    color:#7b7b7b;
-                                    border-radius:8px;
-                                ">
-
-                                Belum ada screenshot MT5
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    </button>
 
                 </div>
 
-            </section>
+            </div>
 
-            <!-- ================= TOAST ================= -->
+            <!-- RIGHT -->
 
-            <p
-                id="toast"
-                class="toast hidden">
-            </p>
+            <div class="upload-right">
+
+                <img
+                    id="pnl-preview"
+                    src=""
+                    style="
+                        display:none;
+                        width:100%;
+                        border:1px solid #33ff66;
+                        border-radius:8px;
+                    ">
+
+                <div
+                    id="no-image"
+                    style="
+                        padding:70px 20px;
+                        text-align:center;
+                        border:1px dashed #33ff66;
+                        color:#777;
+                        border-radius:8px;
+                    ">
+
+                    Belum ada screenshot MT5
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
+
+</section>
+
+<!-- ================= TOAST ================= -->
+
+<p
+    id="toast"
+    class="toast hidden">
+</p>
+
+</div>
+
+</div>
 
 </div>
 
@@ -315,3 +316,4 @@
 
 </body>
 </html>
+
