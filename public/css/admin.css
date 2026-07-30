@@ -264,6 +264,8 @@
 
 }
 
+  
+
 
 
 .table-wrap {
@@ -333,6 +335,106 @@
 .row-controls {
 
   gap:4px;
+
+}
+
+
+}
+
+/* ================= MOBILE TABLE FIX ================= */
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+.admin-table {
+    min-width: 950px;
+    white-space: nowrap;
+}
+
+
+/* INPUT TP SL */
+.admin-table input,
+.nominal-input {
+
+    width: 80px;
+    height: 32px;
+
+    background:#05130a;
+
+    border:1px solid var(--border);
+
+    color:var(--green);
+
+    font-family:var(--font-mono);
+
+    font-size:12px;
+
+    padding:5px 8px;
+
+    border-radius:5px;
+
+    box-sizing:border-box;
+
+}
+
+
+.admin-table input:focus {
+
+    outline:none;
+
+    border-color:var(--green-dim);
+
+}
+
+
+
+/* HP */
+
+@media(max-width:600px){
+
+
+.admin-wrap {
+
+    padding:20px 8px 40px;
+
+}
+
+
+.table-wrap {
+
+    width:100%;
+
+}
+
+
+.admin-table {
+
+    min-width:900px;
+
+}
+
+
+
+.admin-table th,
+.admin-table td {
+
+    font-size:11px;
+
+    padding:6px;
+
+}
+
+
+.admin-table input {
+
+    width:65px;
+
+    font-size:11px;
 
 }
 
