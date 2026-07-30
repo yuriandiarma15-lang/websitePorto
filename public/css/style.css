@@ -257,25 +257,28 @@ main#app {
 }
 .admin-link:hover { color: var(--green); text-decoration: underline; }
 
-.table-wrap {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  min-height: 200px;
+.table-wrap{
+    display:block;
+    width:100%;
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    min-height:200px;
 }
+
 .signal-table {
   width: 100%;
+  min-width: 900px;   /* supaya semua kolom tetap ada */
   border-collapse: collapse;
   font-size: 13px;
 }
-.signal-table thead th {
-  background: #0d1a0f;
-  color: var(--text-muted);
-  text-align: left;
-  padding: 10px 12px;
-  font-size: 11px;
-  letter-spacing: 1px;
-  border-bottom: 1px solid var(--border);
+.signal-table{
+    width:max-content;
+    min-width:900px;
+    border-collapse:collapse;
+    font-size:13px;
 }
 .signal-table tbody td {
   padding: 9px 12px;
@@ -434,4 +437,28 @@ button:focus-visible {
 
 .error-text{
     color:#ff5555;
+}
+/* ===========================
+   MOBILE TABLE
+=========================== */
+
+@media (max-width:768px){
+
+    .table-wrap{
+        overflow-x:auto;
+        overflow-y:hidden;
+        -webkit-overflow-scrolling:touch;
+    }
+
+    .signal-table{
+        min-width:900px;
+    }
+
+    .signal-table th,
+    .signal-table td{
+        white-space:nowrap;
+        padding:10px 8px;
+        font-size:12px;
+    }
+
 }
