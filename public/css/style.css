@@ -444,21 +444,47 @@ button:focus-visible {
 
 @media (max-width:768px){
 
+    .content{
+        padding:20px 10px 20px;
+    }
+
     .table-wrap{
-        overflow-x:auto;
-        overflow-y:hidden;
-        -webkit-overflow-scrolling:touch;
+        overflow:hidden;
     }
 
     .signal-table{
-        min-width:900px;
+        width:100%;
+        min-width:100%;
+        table-layout:fixed;
+        font-size:10px;
     }
 
     .signal-table th,
     .signal-table td{
+        padding:5px 2px;
+        font-size:9px;
+        text-align:center;
         white-space:nowrap;
-        padding:10px 8px;
-        font-size:12px;
+    }
+
+    .signal-table th:nth-child(1),
+    .signal-table td:nth-child(1){
+        width:22px;
+    }
+
+    .signal-table th:nth-child(2),
+    .signal-table td:nth-child(2){
+        width:48px;
+    }
+
+    .signal-table th:nth-child(3),
+    .signal-table td:nth-child(3){
+        width:36px;
+    }
+
+    .badge{
+        font-size:8px;
+        padding:2px 4px;
     }
 
 }
