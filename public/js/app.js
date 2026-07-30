@@ -122,6 +122,40 @@ async function init() {
 
   await Promise.all([loadOverallStats(), loadSelectedDate()]);
 }
+async function loadDailyPnl() {
+
+    const img = document.getElementById("daily-pnl-image");
+    const empty = document.getElementById("daily-pnl-empty");
+
+    try {
+
+        const data = await fetchJSON(`/api/daily-pnl?date=${currentDate}`);
+
+        if (data && data.image_path) {
+
+            img.src = data.image_path + "?t=" + Date.now();
+
+            img.style.display = "block";
+
+            empty.style.display = "none";
+
+        } else {
+
+            img.style.display = "none";
+
+            empty.style.display = "block";
+
+        }
+
+    } catch (e) {
+
+        img.style.display = "none";
+
+        empty.style.display = "block";
+
+    }
+
+}
 
 async function loadOverallStats() {
   const stats = await fetchJSON('/api/stats/overall');
@@ -143,9 +177,15 @@ async function loadSelectedDate() {
   document.getElementById('date-picker').value = currentDate;
 
   const data = await fetchJSON(`/api/signals?date=${currentDate}`);
-  renderTable(data.signals);
-  updateNavButtons();
-  document.getElementById('last-sync').textContent = new Date().toLocaleTimeString('id-ID', { hour12: false });
+
+renderTable(data.signals);
+
+await loadDailyPnl();
+
+updateNavButtons();
+
+document.getElementById('last-sync').textContent =
+new Date().toLocaleTimeString('id-ID',{hour12:false});
 }
 
 function pnlCell(s) {
