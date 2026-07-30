@@ -142,7 +142,7 @@ router.patch('/signals/:id/status', requireApiKey, (req, res) => {
     id
   );
 
-  ...
+  
 const updated = db.prepare(`SELECT * FROM signals WHERE id = ?`).get(id);
 res.json(updated);
 });
@@ -183,11 +183,12 @@ router.post(
     );
 
     res.json({
-      success: true,
-      image: image_path
-    });
+  success: true,
+  image: image_path
+ });
 
-});
+   }
+);
 
 router.get("/daily-pnl", (req, res) => {
 
@@ -239,8 +240,9 @@ router.delete(
 
     res.json({
       success: true
-    });
-
+ });
+  
+  }
 });
 
 module.exports = router;
