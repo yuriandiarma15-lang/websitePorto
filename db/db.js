@@ -25,40 +25,74 @@ db.exec(`
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 
-  CREATE INDEX IF NOT EXISTS idx_trading_date ON signals(trading_date);
+  CREATE INDEX IF NOT EXISTS idx_trading_date
+  ON signals(trading_date);
 `);
 
-// --- Migration ringan: tambah kolom nominal kalau belum ada ---
-// (supaya database lama yang sudah ada datanya tidak perlu dihapus ulang)
+// Migration ringan
 const existingCols = db.prepare(`PRAGMA table_info(signals)`).all().map(c => c.name);
-const nominalCols = ['tp1_nominal', 'tp2_nominal', 'sl_nominal'];
+
+const nominalCols = [
+  'tp1_nominal',
+  'tp2_nominal',
+  'sl_nominal'
+];
+
 for (const col of nominalCols) {
   if (!existingCols.includes(col)) {
     db.exec(`ALTER TABLE signals ADD COLUMN ${col} REAL`);
   }
 }
 
+
 /**
- * Hitung "trading_date" dari timestamp asli.
- * Sesi berjalan 07:00 -> 02:00 dini hari berikutnya.
- * Jam 00:00 - 06:59 dianggap masih bagian dari trading_date HARI SEBELUMNYA.
+ * Konversi Date ke timezone Asia/Jakarta
+ */
+function toJakarta(date = new Date()) {
+
+  return new Date(
+    new Date(date).toLocaleString(
+      "en-US",
+      {
+        timeZone: "Asia/Jakarta"
+      }
+    )
+  );
+
+}
+
+
+/**
+ * Trading Date
+ *
+ * Session:
+ * 07:00 WIB - 06:59 WIB
+ *
+ * Jam 00:00 - 06:59
+ * dianggap masih trading hari sebelumnya.
  */
 function getTradingDate(date = new Date()) {
 
-  const jakarta = new Date(
-    new Date(date).toLocaleString("en-US", {
-      timeZone: "Asia/Jakarta"
-    })
-  );
+  const d = toJakarta(date);
 
-  if (jakarta.getHours() < 7) {
-    jakarta.setDate(jakarta.getDate() - 1);
+  if (d.getHours() < 7) {
+    d.setDate(d.getDate() - 1);
   }
 
-  const y = jakarta.getFullYear();
-  const m = String(jakarta.getMonth() + 1).padStart(2, "0");
-  const d = String(jakarta.getDate()).padStart(2, "0");
+  const year = d.getFullYear();
 
-  return `${y}-${m}-${d}`;
+  const month = String(
+    d.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    d.getDate()
+  ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
-module.exports = { db, getTradingDate };
+
+module.exports = {
+  db,
+  getTradingDate
+};
