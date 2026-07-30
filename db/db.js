@@ -3,9 +3,13 @@ const path = require('path');
 const fs = require('fs');
 
 const DB_DIR = path.join(__dirname, '..', 'data');
-if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
 
 const db = new Database(path.join(DB_DIR, 'signals.sqlite'));
+
 db.pragma('journal_mode = WAL');
 
 db.exec(`
@@ -27,10 +31,27 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_trading_date
   ON signals(trading_date);
+
+  CREATE TABLE IF NOT EXISTS daily_pnl (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    trading_date TEXT NOT NULL UNIQUE,
+    image_path TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_daily_pnl
+  ON daily_pnl(trading_date);
 `);
 
-// Migration ringan
-const existingCols = db.prepare(`PRAGMA table_info(signals)`).all().map(c => c.name);
+
+// ======================
+// Migration Signals
+// ======================
+
+const existingCols = db
+  .prepare(`PRAGMA table_info(signals)`)
+  .all()
+  .map(c => c.name);
 
 const nominalCols = [
   'tp1_nominal',
@@ -46,17 +67,20 @@ for (const col of nominalCols) {
 
 
 /**
- * Konversi Date ke timezone Asia/Jakarta
+ * Konversi Date ke Asia/Jakarta
  */
+
 function toJakarta(date = new Date()) {
 
   return new Date(
+
     new Date(date).toLocaleString(
       "en-US",
       {
         timeZone: "Asia/Jakarta"
       }
     )
+
   );
 
 }
@@ -69,8 +93,9 @@ function toJakarta(date = new Date()) {
  * 07:00 WIB - 06:59 WIB
  *
  * Jam 00:00 - 06:59
- * dianggap masih trading hari sebelumnya.
+ * dianggap trading hari sebelumnya
  */
+
 function getTradingDate(date = new Date()) {
 
   const d = toJakarta(date);
@@ -90,6 +115,7 @@ function getTradingDate(date = new Date()) {
   ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+
 }
 
 module.exports = {
